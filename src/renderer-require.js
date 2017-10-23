@@ -54,8 +54,21 @@ export async function rendererRequireDirect(modulePath) {
   bw.openDevTools();
   */
 
-  let preloadFile = path.join(__dirname, 'renderer-require-preload.html');
-  bw.loadURL(`file:///${preloadFile}?module=${encodeURIComponent(fullPath)}`);
+  // let preloadFile = path.join(__dirname, 'renderer-require-preload.html');
+  // bw.loadURL(`file:///${preloadFile}?module=${encodeURIComponent(fullPath)}`);
+  // await ready;
+
+  let preloadFile
+  if (process.env.NODE_ENV === 'development') {
+    preloadFile = _path2.default.join( __dirname , './renderer-require-preload.html');
+  }
+  if (process.env.NODE_ENV === 'production') {
+    preloadFile = _path2.default.join( __dirname , './node_modules/electron-remote/lib/renderer-require-
+    preload.html');
+  }
+
+  let loadFile = 'file://' + preloadFile  + '?module=' + encodeURIComponent(fullPath)
+  bw.loadURL(loadFile);
   await ready;
 
   let fail = await executeJavaScriptMethod(bw, 'window.moduleLoadFailure');
